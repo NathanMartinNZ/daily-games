@@ -64,8 +64,8 @@
 	});
 
 	function findInputIndex() {
-		let idx = 0;
-		const row = game.rows[game.current_round];
+        const row = game.rows[game.current_round];
+		let idx = row.length;
 		for (let i = 0; i < row.length; i++) {
 			if (row[i].letter === '') {
 				idx = i;
@@ -80,9 +80,18 @@
 	 */
 	function onKeyDown(e) {
 		const letter = String.fromCharCode(e.keyCode);
-		game.rows[game.current_round][findInputIndex()].letter = letter;
-		console.log(String.fromCharCode(e.keyCode));
-		console.log(findInputIndex());
+        const guess_ready_to_submit = game.rows[game.current_round].filter(letter => letter.letter === "").length
+        if(e.keyCode >= 65 && e.keyCode <= 90 && guess_ready_to_submit) {
+            // Input: A-Z
+            game.rows[game.current_round][findInputIndex()].letter = letter;
+        } else if(e.keyCode === 8 || e.keyCode === 46) {
+            // Input: backspace or delete
+            let idx = findInputIndex()
+            console.log(idx)
+            if(idx > 0) {
+                game.rows[game.current_round][idx - 1].letter = "";
+            }
+        }
 	}
 
 	function setHints() {
@@ -115,7 +124,13 @@
 			} else {
 				setHints();
 				console.log('INCREMENT ROUND NUMBER');
-				game.current_round = game.current_round + 1;
+                if(game.current_round < 5) {
+                    // Increment round number if not lost
+                    game.current_round = game.current_round + 1;
+                } else {
+                    // Game lost. Show correct word and give option to reset
+
+                }
 			}
 		} else {
             console.log("INVALID GUESS")
@@ -125,18 +140,23 @@
 
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 <div>
-	<h1>Wordle</h1>
-	{#each game.rows as row}
-		<div class="row">
-			{#each row as cell}
-				<span
-					class={`cell ${cell.hint === 'contains' ? 'contains' : ''} ${cell.hint === 'exact' ? 'exact' : ''} ${cell.hint === 'incorrect' ? 'incorrect' : ''}`}
-					>{cell.letter}</span
-				>
-			{/each}
-		</div>
-	{/each}
-	<button on:click={onGuessSubmit}>ENTER</button>
+	<h1 class="text-lg text-center font-bold mt-1">Wordle</h1>
+    <div class="container flex m-auto my-1">
+        <button on:click={onGuessSubmit} class="m-auto w-56 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">ENTER</button>
+    </div>
+    <div class="container flex flex-col mx-auto">
+        {#each game.rows as row}
+            <div class="row m-auto">
+                {#each row as cell}
+                    <div
+                        class={`cell font-sans text-center items-center m-auto ${cell.hint === 'contains' ? 'contains' : ''} ${cell.hint === 'exact' ? 'exact' : ''} ${cell.hint === 'incorrect' ? 'incorrect' : ''}`}
+                    >
+                        <p class="pt-1 text-lg font-bold">{cell.letter}</p>   
+                    </div>
+                {/each}
+            </div>
+        {/each}
+    </div>
 </div>
 
 <style>
@@ -146,8 +166,9 @@
 	.cell {
 		height: 40px;
 		width: 40px;
-		margin: 2px;
+		margin: 3px;
 		border: 1px black solid;
+        border-radius: 2px;
 	}
 	.cell.exact {
 		background-color: green;
