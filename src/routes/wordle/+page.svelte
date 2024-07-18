@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { WORD_LIST } from './word_list';
+    import Keyboard from './components/Keyboard.svelte';
 
 	let game = {
 		rows: [
@@ -146,7 +147,7 @@
     </div>
     <div class="container flex flex-col mx-auto">
         {#each game.rows as row}
-            <div class="row m-auto">
+            <div class="row flex m-auto">
                 {#each row as cell}
                     <div
                         class={`cell font-sans text-center items-center m-auto ${cell.hint === 'contains' ? 'contains' : ''} ${cell.hint === 'exact' ? 'exact' : ''} ${cell.hint === 'incorrect' ? 'incorrect' : ''}`}
@@ -157,12 +158,10 @@
             </div>
         {/each}
     </div>
+    <Keyboard />
 </div>
 
 <style>
-	.row {
-		display: flex;
-	}
 	.cell {
 		height: 40px;
 		width: 40px;
