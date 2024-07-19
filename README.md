@@ -9,4 +9,4 @@
 - Wordle:
     - Add animation for invalid guess
     - Add ability to reset game
-    - Migrate to on-screen keyboard (to grey out incorrect, used letters)
+    - Show word if lost
