@@ -1,4 +1,4 @@
 <h1>Daily Games</h1>
 
 <h2>Play:</h2>
-<a href="/wordle">Wordle</a>
+<a href="/word-game">What's the word?</a>

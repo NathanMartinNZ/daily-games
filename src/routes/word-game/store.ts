@@ -48,7 +48,8 @@ const gameState = {
     current_round: 0,
     playing: true,
     win: false,
-    word: ''
+    word: '',
+    incorrect_guess: false
 };
 
 const keyboardRow1State = [

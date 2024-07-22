@@ -18,18 +18,14 @@
 	 * @param {string} letter
 	 */
     function onKeyDown(letter) {
-        console.log(letter)
         const letterKeyCode = letter.charCodeAt(0)
-        console.log(letterKeyCode)
         const guess_ready_to_submit = $game.rows[$game.current_round].filter(letter => letter.letter === "").length
         if(letterKeyCode >= 65 && letterKeyCode <= 90 && guess_ready_to_submit) {
             // Input: A-Z
             $game.rows[$game.current_round][findInputIndex()].letter = letter;
-            console.log($game.rows[$game.current_round])
         } else if(letterKeyCode === 98) {
             // Input: back
             let idx = findInputIndex()
-            console.log(idx)
             if(idx > 0) {
                 $game.rows[$game.current_round][idx - 1].letter = "";
             }
@@ -41,14 +37,10 @@
     
 	function setHints() {
 		let row = $game.rows[$game.current_round];
-		console.log('row:', row);
 		row.forEach((cell, i) => {
-			console.log(cell.letter, $game.word[i]);
 			if (cell.letter === $game.word[i]) {
-				console.log('exact');
 				cell.hint = 'exact';
 			} else if ($game.word.includes(cell.letter)) {
-				console.log('contains');
 				cell.hint = 'contains';
 			} else {
 				cell.hint = 'incorrect';
@@ -83,57 +75,61 @@
     
 	function onGuessSubmit() {
 		const guess = $game.rows[$game.current_round].map((letter) => letter.letter).join('');
-		console.log(guess, $game.word);
 		const valid_guess = WORD_LIST.includes(guess.toLowerCase());
 		if (valid_guess) {
 			if (guess === $game.word) {
+                // State: Winner
 				setHints();
-				console.log('WINNER');
 				$game.playing = false;
 				$game.win = true;
 			} else {
+                // State: Next round / Game lost
 				setHints();
                 markKeyboardLettersIncorrect();
-				console.log('INCREMENT ROUND NUMBER');
                 if($game.current_round < 5) {
-                    // Increment round number if not lost
+                    // State: Increment round number if not lost
                     $game.current_round = $game.current_round + 1;
                 } else {
-                    // Game lost. Show correct word and give option to reset
-                    console.log("GAME LOST")
+                    // State: Game lost. Show correct word and give option to reset
                 }
 			}
 		} else {
-            console.log("INVALID GUESS")
+            // State: Invalid guess
+            // Add animation
+            $game.incorrect_guess = true
+            // Remove animation
+            setTimeout(() => {
+                $game.incorrect_guess = false
+            }, 1500)
         }
-	}    
+	}
 </script>
 
-<div class="mt-2">
+<div class="mt-2" class:animation-incorrect={$game.incorrect_guess}>
     <div class="flex flex-wrap mx-auto">
         <div class="row flex m-auto">
             {#each $keyboardRow1 as key}
-                <div class={`cell font-sans text-center items-center m-auto ${key.incorrect ? "incorrect" : ""}`}>
-                    <button class="pt-1 text-md" on:click={() => onKeyDown(key.letter)}>{key.letter}</button>
-                </div>
+                <button on:click={() => onKeyDown(key.letter)} class={`cell font-sans text-center items-center m-auto ${key.incorrect ? "incorrect" : ""}`}>
+                    <span class="pt-1 text-md">{key.letter}</span>
+                </button>
             {/each}
         </div>
     </div>
     <div class="container flex mx-auto">
         <div class="row flex m-auto">
             {#each $keyboardRow2 as key}
-                <div class={`cell font-sans text-center items-center m-auto ${key.incorrect ? "incorrect" : ""}`}>
-                    <button class="pt-1 text-md" on:click={() => onKeyDown(key.letter)}>{key.letter}</button>
-                </div>
+                <button on:click={() => onKeyDown(key.letter)} class={`cell font-sans text-center items-center m-auto ${key.incorrect ? "incorrect" : ""}`}>
+                    <span class="pt-1 text-md">{key.letter}</span>
+                </button>
             {/each}
         </div>
     </div>
     <div class="flex flex-wrap">
         <div class="row flex m-auto">
             {#each $keyboardRow3 as key}
-                <div class={`cell font-sans text-center items-center m-auto ${key.incorrect ? "incorrect" : ""} ${key.letter === "enter" ? "special" : ""} ${key.letter === "back" ? "special" : ""}`}>
-                    <button class="pt-1 text-md" on:click={() => onKeyDown(key.letter)}>{key.letter}</button>
-                </div>
+                <button on:click={() => onKeyDown(key.letter)} class={`cell font-sans text-center items-center m-auto ${key.incorrect ? "incorrect" : ""} ${key.letter === "enter" ? "special" : ""} ${key.letter === "back" ? "special" : ""}`}>
+                    <span class="pt-1 text-md">{key.letter}</span>
+                </button>
             {/each}
         </div>
     </div>        
@@ -147,13 +143,31 @@
 		height: 40px;
 		width: 25px;
 		margin: 3px;
-		border: 1px black solid;
+		border: 1px #b1a7a6 solid;
         border-radius: 2px;
 	}
     .cell.special {
         width: 44px!important;
     }
     .cell.incorrect {
-        background-color: grey;
+        background-color: #b1a7a6;
+    }
+    .animation-incorrect {
+        animation: shake 0.2s;
+        animation-iteration-count: infinite;
+    }
+
+    @keyframes shake {
+        0% { transform: translate(1px, 1px) rotate(0deg); }
+        10% { transform: translate(-1px, -2px) rotate(-1deg); }
+        20% { transform: translate(-3px, 0px) rotate(1deg); }
+        30% { transform: translate(3px, 2px) rotate(0deg); }
+        40% { transform: translate(1px, -1px) rotate(1deg); }
+        50% { transform: translate(-1px, 2px) rotate(-1deg); }
+        60% { transform: translate(-3px, 1px) rotate(0deg); }
+        70% { transform: translate(3px, 1px) rotate(-1deg); }
+        80% { transform: translate(-1px, -1px) rotate(1deg); }
+        90% { transform: translate(1px, 2px) rotate(0deg); }
+        100% { transform: translate(1px, -2px) rotate(-1deg); }
     }
 </style>

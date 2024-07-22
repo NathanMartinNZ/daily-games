@@ -16,7 +16,7 @@
 </script>
 
 <div>
-	<h1 class="text-lg text-center font-bold mt-1">Wordle</h1>
+	<h1 class="text-lg text-center font-bold mt-1">What's the word?</h1>
     <div class="container flex flex-col mx-auto">
         {#each $game.rows as row}
             <div class="row flex m-auto">
@@ -38,16 +38,16 @@
 		height: 40px;
 		width: 40px;
 		margin: 3px;
-		border: 1px black solid;
+		border: 1px #b1a7a6 solid;
         border-radius: 2px;
 	}
 	.cell.exact {
-		background-color: green;
+		background-color: #7cb518;
 	}
 	.cell.contains {
-		background-color: orange;
+		background-color: #fbb02d;
 	}
 	.cell.incorrect {
-		background-color: grey;
+		background-color: #b1a7a6;
 	}
 </style>
