@@ -15,8 +15,9 @@
 	});
 </script>
 
-<div>
-	<h1 class="text-lg text-center font-bold mt-1">What's the word?</h1>
+<div class="">
+	<h1 class="text-xl text-center font-bold my-2">What's the word?</h1>
+	<a href="/" class="absolute top-0 right-0 mr-2 mt-1">🔙</a>
     <div class="container flex flex-col mx-auto">
         {#each $game.rows as row}
             <div class="row flex m-auto">
