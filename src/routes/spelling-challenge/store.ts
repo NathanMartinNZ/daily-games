@@ -7,6 +7,7 @@ interface GameState {
     correct_answers: string[];
     playing: boolean;
     incorrect_guess: boolean;
+    showTypingIndicator: boolean;
 }
 
 const gameState:GameState = {
@@ -15,7 +16,8 @@ const gameState:GameState = {
     input: [],
     correct_answers: [],
     playing: true,
-    incorrect_guess: false
+    incorrect_guess: false,
+    showTypingIndicator: false
 }
 
 export const game = writable(gameState)

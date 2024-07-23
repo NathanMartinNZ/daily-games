@@ -2,6 +2,13 @@
 	import { onMount } from 'svelte';
     import { game } from './store';
 
+    onMount(() => {
+		// Set initial letters
+
+        // Toggle typing indicator line
+        setInterval(() => $game.showTypingIndicator = !$game.showTypingIndicator, 600)
+	});
+
     /**
 	 * @param {string} letter
 	 */
@@ -22,9 +29,14 @@
 	 */
     async function onButtonClick(action) {
         const word = $game.input.join("").toLowerCase()
-        if(action === "enter" && !$game.correct_answers.includes(word) && $game.input.length > 0) {
-            // Enter & word not already in correct_answers array & input not empty
+        const isNewWord = !$game.correct_answers.includes(word)
+        const meetsMinCharCount = $game.input.length > 3
+        const wordContainsMainLetter = $game.input.includes($game.letter_middle)
+
+        if(action === "enter" && isNewWord && meetsMinCharCount && wordContainsMainLetter) {
+            // Enter & word not already in correct_answers array & input is more than 3 characters & contains middle letter
             const validWord = await checkIfValidWord(word)
+
             if(validWord) {
                 // Valid English word
                 console.log("valid word")
@@ -34,12 +46,25 @@
                 $game.input = []
             } else {
                 console.log("invalid word")
+                // Add animation
+                $game.incorrect_guess = true
+                // Remove animation
+                setTimeout(() => {
+                    $game.incorrect_guess = false
+                }, 1500)
             }
         } else if(action === "back") {
             // Back
             const input = [...$game.input]
             input.pop()
             $game.input = input
+        } else {
+            // Add animation
+            $game.incorrect_guess = true
+            // Remove animation
+            setTimeout(() => {
+                $game.incorrect_guess = false
+            }, 1500)
         }
     }
 </script>
@@ -47,21 +72,21 @@
 <div>
 	<h1 class="text-xl text-center font-bold my-2">Spelling challenge</h1>
     <a href="/" class="absolute top-0 right-0 mr-2 mt-1">🔙</a>
-    <div class="flex gap-2">
+    <div class="container flex w-11/12 gap-2 mx-auto min-h-8 mt-3 mb-2">
         {#each $game.correct_answers as answer}
-            <span>{answer}</span>
+            <span class="text-sm">{answer}</span>
         {/each}
     </div>
-    <div>
-        <span class="test">{$game.input.join("")}</span>
+    <div class="container flex w-11/12 gap-2 mx-auto justify-center font-bold min-h-8 my-1">
+        <span class="text-xl">{$game.input.join("")}<span class={`typing-indicator ${!$game.showTypingIndicator ? "hide": ""}`}>|</span></span>
     </div>
-    <div class="spelling-container mx-auto">
+    <div class="spelling-container mx-auto" class:animation-incorrect={$game.incorrect_guess}>
         <button class="hex font-bold center-item" on:click={() => onKeyDown($game.letter_middle)}>{$game.letter_middle}</button>
         {#each $game.letters_other as letter_other}
             <button class="hex outer-item" on:click={() => onKeyDown(letter_other)}>{letter_other}</button>
         {/each}
     </div>
-    <div class="container flex gap-2 mx-auto max-w-sm mt-2">
+    <div class="container flex w-11/12 gap-2 mx-auto max-w-sm mt-2">
         <button on:click={() => onButtonClick("enter")} class="w-full bg-transparent font-semibold py-2 px-4 border rounded">enter</button>
         <button on:click={() => onButtonClick("back")} class="w-full bg-transparent font-semibold py-2 px-4 border rounded">back</button>
     </div>
@@ -91,7 +116,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #f7da21;
+  background-color: #a8dadc;
 }
 
 .outer-item {
@@ -104,4 +129,12 @@
 .outer-item:nth-child(5) { top: 60%; left: 66%; transform: translateX(-50%); }
 .outer-item:nth-child(6) { top: 60%; left: 34%; transform: translateX(-50%); }
 .outer-item:nth-child(7) { top: 33.5%; left: 18%; transform: translateX(-50%); }
+
+.typing-indicator {
+    font-weight: normal;
+}
+
+.hide {
+    opacity: 0;
+}
 </style>

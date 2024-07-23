@@ -6,3 +6,5 @@
 
 ## Todo
 
+- Spelling game bug: Correctly placed letters sometimes don't get background
+

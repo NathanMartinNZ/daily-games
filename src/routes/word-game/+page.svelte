@@ -4,7 +4,6 @@
 	import { WORD_LIST } from './word_list';
     import Keyboard from './components/Keyboard.svelte';
 
-
 	function setWord() {
 		$game.word = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)].toUpperCase();
 	}
