@@ -5,8 +5,6 @@
     onMount(() => {
 		// Set initial letters
 
-        // Toggle typing indicator line
-        setInterval(() => $game.showTypingIndicator = !$game.showTypingIndicator, 600)
 	});
 
     /**
@@ -78,7 +76,7 @@
         {/each}
     </div>
     <div class="container flex w-11/12 gap-2 mx-auto justify-center font-bold min-h-8 my-1">
-        <span class="text-xl">{$game.input.join("")}<span class={`typing-indicator ${!$game.showTypingIndicator ? "hide": ""}`}>|</span></span>
+        <span class="text-xl">{$game.input.join("")}</span>
     </div>
     <div class="spelling-container mx-auto" class:animation-incorrect={$game.incorrect_guess}>
         <button class="hex font-bold center-item" on:click={() => onKeyDown($game.letter_middle)}>{$game.letter_middle}</button>
